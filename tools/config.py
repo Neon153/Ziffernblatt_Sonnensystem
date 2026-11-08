@@ -21,13 +21,17 @@ import math
 
 CANVAS = 450
 FACE_C = CANVAS / 2            # centre of the round display
-SUN_X, SUN_Y = 225.0, 244.0     # sun position (slightly below centre, room for the time)
-ELEV = 24.0                     # viewing elevation in degrees
+SUN_X, SUN_Y = 225.0, 262.0     # sun position (below centre, room for time + date)
+ELEV = 30.0                     # viewing elevation in degrees
 K = math.sin(math.radians(ELEV))
 COS_E = math.cos(math.radians(ELEV))
 DEPTH_GAIN = 0.16               # perspective size cue: near planets up to +16 %, far ones -16 %
 N_FRAMES = 24                   # pre-rendered lighting frames per planet (every 15 deg)
-SUN_R = 17.0                    # photosphere radius (display px)
+SUN_R = 22.0                    # photosphere radius (display px)
+BELT_R = 105.0                  # asteroid belt radius
+ORBIT_GLOW = 0.07               # brightness of the static orbit lines
+BATTERY_R = 200.0               # battery arc radius (around the face centre)
+BATTERY_A0, BATTERY_A1 = 155.0, 205.0   # WFF angles of the battery arc (bottom)
 
 # ---------------------------------------------------------------------------
 # Time sources
@@ -57,14 +61,14 @@ D_J2000 = "([SECONDS_SINCE_EPOCH] / 86400 - 10957.5)"
 #   Uranus    1.96 ->  2   (12 h)
 #   Neptune   1    ->  1   (24 h)
 PLANETS = [
-    dict(key="merkur",  name="Merkur",  r=31,  R=3.5,  m=1.45, n=685, L0=252.25, P=87.969,   behind=True),
-    dict(key="venus",   name="Venus",   r=42,  R=5.0,  m=1.55, n=268, L0=181.98, P=224.701,  behind=True),
-    dict(key="erde",    name="Erde",    r=54,  R=5.5,  m=1.55, n=165, L0=100.46, P=365.256,  behind=True),
-    dict(key="mars",    name="Mars",    r=67,  R=4.0,  m=1.55, n=88,  L0=355.43, P=686.98,   behind=False),
-    dict(key="jupiter", name="Jupiter", r=111, R=12.0, m=1.15, n=14,  L0=34.40,  P=4332.59,  behind=False),
-    dict(key="saturn",  name="Saturn",  r=138, R=9.0,  m=2.40, n=6,   L0=49.94,  P=10759.22, behind=False),
-    dict(key="uranus",  name="Uranus",  r=165, R=7.0,  m=1.50, n=2,   L0=313.23, P=30688.5,  behind=False),
-    dict(key="neptun",  name="Neptun",  r=190, R=6.5,  m=1.50, n=1,   L0=304.88, P=60182.0,  behind=False),
+    dict(key="merkur",  name="Merkur",  r=36,  R=5.0,  m=1.45, n=685, L0=252.25, P=87.969,   behind=True),
+    dict(key="venus",   name="Venus",   r=51,  R=6.5,  m=1.50, n=268, L0=181.98, P=224.701,  behind=True),
+    dict(key="erde",    name="Erde",    r=68,  R=7.0,  m=1.50, n=165, L0=100.46, P=365.256,  behind=False),
+    dict(key="mars",    name="Mars",    r=86,  R=5.5,  m=1.50, n=88,  L0=355.43, P=686.98,   behind=False),
+    dict(key="jupiter", name="Jupiter", r=124, R=14.0, m=1.15, n=14,  L0=34.40,  P=4332.59,  behind=False),
+    dict(key="saturn",  name="Saturn",  r=151, R=10.5, m=2.40, n=6,   L0=49.94,  P=10759.22, behind=False),
+    dict(key="uranus",  name="Uranus",  r=174, R=8.5,  m=1.45, n=2,   L0=313.23, P=30688.5,  behind=False),
+    dict(key="neptun",  name="Neptun",  r=194, R=8.0,  m=1.45, n=1,   L0=304.88, P=60182.0,  behind=False),
 ]
 # Arrangement of the approved reference image at 22:59:30 (screen longitudes, deg).
 # Clock mode is phased so that the watch shows exactly this picture at that time.
@@ -78,17 +82,17 @@ ORBIT_EL = dict(merkur=(0.20563, 77.46), venus=(0.00677, 131.53), erde=(0.01671,
 
 
 # Earth's Moon (relative to Earth, in the orbital plane)
-MOON = dict(r=11.0, R=1.6, n_clock=2206, L0_real=218.316, rate_real=13.176396)
+MOON = dict(r=14.0, R=2.3, n_clock=2206, L0_real=218.316, rate_real=13.176396)
 # Galilean moons (relative to Jupiter). Clock mode keeps the 1:2:4 Laplace resonance.
 GALILEAN = [
-    dict(key="io",       r=17.0, R=0.9,  n_clock=4320, L0=106.1, P=1.769),
-    dict(key="europa",   r=22.0, R=0.9,  n_clock=2160, L0=175.7, P=3.551),
-    dict(key="ganymed",  r=28.0, R=1.15, n_clock=1080, L0=120.6, P=7.155),
-    dict(key="kallisto", r=36.0, R=1.15, n_clock=463,  L0=84.5,  P=16.689),
+    dict(key="io",       r=19.0, R=1.4, n_clock=4320, L0=106.1, P=1.769),
+    dict(key="europa",   r=24.0, R=1.3, n_clock=2160, L0=175.7, P=3.551),
+    dict(key="ganymed",  r=30.0, R=1.8, n_clock=1080, L0=120.6, P=7.155),
+    dict(key="kallisto", r=38.0, R=1.7, n_clock=463,  L0=84.5,  P=16.689),
 ]
 
 # Static comet (head position in canvas px, tail points away from the sun)
-COMET_HEAD = (SUN_X + 60, SUN_Y + 84)
+COMET_HEAD = (SUN_X + 113, SUN_Y - 84)     # upper right, tail towards the rim
 
 # Look
 GOLD = "#DCBE87"
@@ -153,7 +157,7 @@ def sy_expr(lam, r, cy=SUN_Y):
 
 def depth_scale_expr(lam, r):
     # near side (sin < 0) -> bigger
-    g = DEPTH_GAIN * COS_E * r / 190.0
+    g = DEPTH_GAIN * COS_E * r / 194.0
     return f"(1 - {fmt(g)} * sin(rad({lam})))"
 
 
@@ -194,8 +198,8 @@ def sprite_size(p):
 SPRITE_SCALE = 2   # sprite files are rendered at 2x display size (crisp after depth scaling)
 
 # ---- sprite geometry shared by renderer / generator / simulator -------------
-SUN_OVERLAY = 48        # crop of the background around the sun, drawn over planets behind it
-MOONPHASE_ICON = 9
+SUN_OVERLAY = 60        # crop of the background around the sun, drawn over planets behind it
+MOONPHASE_ICON = 13
 
 
 def small_sprite(R):

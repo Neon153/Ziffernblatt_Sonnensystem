@@ -34,16 +34,18 @@ OUT = os.path.join(RES, "raw", "watchface.xml")
 S = ET.SubElement
 
 # ---- text styles of the reference image (canvas px) -------------------------
-TIME_FONT, TIME_SIZE, TIME_LS = "inter_display_extralight", 59.0, 2.0 / 59      # 118 px / 4 px at 2x
-SMALL_FONT, SMALL_SIZE = "inter_light", 10.5
-DATE_LS, ROW_LS = 2.5 / 10.5, 1.5 / 10.5
+TIME_FONT, TIME_SIZE, TIME_LS, TIME_BASE = "inter_display_extralight", 74.0, 0.03, 118
+SMALL_FONT, DATE_SIZE, ROW_SIZE = "inter_regular", 16.0, 17.0
+DATE_LS, ROW_LS = 0.16, 0.06
+DATE_BASE, ROW_BASE = 148, 394
+ROW_X = (140, 225, 310)          # centres of heart rate / steps / battery
 COL_TIME, COL_GOLD, COL_ROW, COL_STEPS = "#FFF0ECE4", "#FFDCBE87", "#FFC8C4BC", "#FF96D7F0"
 COL_TIME_AOD, COL_DATE_AOD = "#FFAF9669", "#FF6E5F46"
 
 # ---- trail arcs (calibrated against the reference splat, see README) ---------
 TRAIL_COLOR, TRAIL_BASE = (0.95, 0.88, 0.75), 0.035
 EARTH_COLOR = (0.55, 0.88, 1.0)
-TRAIL_W = 1.1
+TRAIL_W = 1.6
 
 
 def attrs(**kw):
@@ -261,14 +263,24 @@ def time_text(parent, color, ambient):
     g = group(parent, "zeit_aod" if ambient else "zeit")
     (ambient_only if ambient else ambient_hide)(g)
     _, comps = condition(g, [("h24", "[IS_24_HOUR_MODE]")])
-    text(comps["h24"], 225, 114, 300, TIME_FONT, TIME_SIZE, color, "%s:%s", ("[HOUR_0_23_Z]", "[MINUTE_Z]"),
+    text(comps["h24"], 225, TIME_BASE, 320, TIME_FONT, TIME_SIZE, color, "%s:%s", ("[HOUR_0_23_Z]", "[MINUTE_Z]"),
          letter=TIME_LS)
     d = S(g.find("Condition"), "Default")
-    text(d, 225, 114, 300, TIME_FONT, TIME_SIZE, color, "%s:%s", ("[HOUR_1_12]", "[MINUTE_Z]"), letter=TIME_LS)
+    text(d, 225, TIME_BASE, 320, TIME_FONT, TIME_SIZE, color, "%s:%s", ("[HOUR_1_12]", "[MINUTE_Z]"), letter=TIME_LS)
+
+
+def date_width(sample="MO  ·  9 NOV"):
+    f = ImageFont.truetype(os.path.join(RES, "font", SMALL_FONT + ".otf"), 1000)
+    w = sum(f.getlength(c) for c in sample) / 1000 * DATE_SIZE + DATE_LS * DATE_SIZE * (len(sample) - 1)
+    digit = f.getlength("0") / 1000 * DATE_SIZE + DATE_LS * DATE_SIZE
+    return w, digit
+
+
+DATE_CX = 225 - (MOONPHASE_ICON + 7) / 2       # date + moon icon centred as a unit
 
 
 def date_text(parent, color, ambient):
-    t = text(parent, 219, 134, 200, SMALL_FONT, SMALL_SIZE, color, "%s  ·  %s %s",
+    t = text(parent, DATE_CX, DATE_BASE, 240, SMALL_FONT, DATE_SIZE, color, "%s  ·  %s %s",
              ("subText([DAY_OF_WEEK_S], 0, 2)", "[DAY]", "subText([MONTH_S], 0, 3)"), letter=DATE_LS, upper=True,
              name="datum_aod" if ambient else "datum")
     (ambient_only if ambient else ambient_hide)(t)
@@ -302,17 +314,21 @@ def build():
     # battery: filled part of the arc at the bottom (the track is in the background)
     pd = S(sc, "PartDraw", attrs(x=0, y=0, width=CANVAS, height=CANVAS, name="akku"))
     ambient_hide(pd)
-    arc = S(pd, "Arc", attrs(centerX=FACE_C, centerY=FACE_C, width=392, height=392, startAngle=140, endAngle=220))
-    S(arc, "Stroke", attrs(color="#FFE4CB96", thickness=1.4, cap="BUTT"))
-    tf(arc, "startAngle", "220 - 0.8 * clamp([BATTERY_PERCENT], 0, 100)")
+    arc = S(pd, "Arc", attrs(centerX=FACE_C, centerY=FACE_C, width=2 * BATTERY_R, height=2 * BATTERY_R,
+                             startAngle=BATTERY_A0, endAngle=BATTERY_A1))
+    S(arc, "Stroke", attrs(color="#FFE4CB96", thickness=1.8, cap="BUTT"))
+    tf(arc, "startAngle", f"{fmt(BATTERY_A1)} - {fmt((BATTERY_A1 - BATTERY_A0) / 100)} * clamp([BATTERY_PERCENT], 0, 100)")
 
     time_text(sc, COL_TIME, False)
     time_text(sc, COL_TIME_AOD, True)
     date_text(sc, COL_GOLD, False)
     date_text(sc, COL_DATE_AOD, True)
 
-    mg = group(sc, "mondphase", 270, 126, MOONPHASE_ICON, MOONPHASE_ICON)
-    tf(mg, "x", "270 + ([DAY] > 9 ? 3 : 0)")
+    w, digit = date_width()
+    ix = int(round(DATE_CX + w / 2 + 7))
+    iy = int(round(DATE_BASE - 0.73 * DATE_SIZE / 2 - MOONPHASE_ICON / 2))
+    mg = group(sc, "mondphase", ix, iy, MOONPHASE_ICON, MOONPHASE_ICON)
+    tf(mg, "x", f"{ix} + ([DAY] > 9 ? {fmt(round(digit / 2, 2))} : 0)")
     ambient_hide(mg)
     _, comps = condition(mg, [(f"m{k}", f"[MOON_PHASE_TYPE] == {k}") for k in range(8)])
     for k in range(8):
@@ -321,14 +337,15 @@ def build():
     row = group(sc, "werte")
     ambient_hide(row)
     _, comps = condition(row, [("hr_ok", "[HEART_RATE] > 0")])
-    text(comps["hr_ok"], 162.5, 389, 80, SMALL_FONT, SMALL_SIZE, COL_ROW, "%s BPM", ("[HEART_RATE]",), letter=ROW_LS)
-    text(S(row.find("Condition"), "Default"), 162.5, 389, 80, SMALL_FONT, SMALL_SIZE, "#FF8A867E", "-- BPM",
+    hx, sx_, bx = ROW_X
+    text(comps["hr_ok"], hx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, COL_ROW, "%s BPM", ("[HEART_RATE]",), letter=ROW_LS)
+    text(S(row.find("Condition"), "Default"), hx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, "#FF8A867E", "-- BPM",
          letter=ROW_LS)
-    text(row, 225, 389, 60, SMALL_FONT, SMALL_SIZE, COL_STEPS, "%s", ("[STEP_COUNT]",), letter=ROW_LS)
-    text(row, 287.5, 389, 80, SMALL_FONT, SMALL_SIZE, COL_ROW, "%s %%", ("[BATTERY_PERCENT]",), letter=ROW_LS)
+    text(row, sx_, ROW_BASE, 70, SMALL_FONT, ROW_SIZE, COL_STEPS, "%s", ("[STEP_COUNT]",), letter=ROW_LS)
+    text(row, bx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, COL_ROW, "%s %%", ("[BATTERY_PERCENT]",), letter=ROW_LS)
     dots = S(row, "PartDraw", attrs(x=0, y=0, width=CANVAS, height=CANVAS))
-    for x in (193, 257):
-        e = S(dots, "Ellipse", attrs(x=x - 1, y=385, width=2, height=2))
+    for x in ((hx + sx_) / 2 + 2, (sx_ + bx) / 2 - 2):
+        e = S(dots, "Ellipse", attrs(x=x - 1.3, y=ROW_BASE - 7.5, width=2.6, height=2.6))
         S(e, "Fill", dict(color=COL_GOLD))
     return wf
 

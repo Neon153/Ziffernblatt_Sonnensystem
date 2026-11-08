@@ -11,7 +11,7 @@ import math
 
 import numpy as np
 
-from config import K, COS_E, SUN_X, SUN_Y, CANVAS
+from config import K, COS_E, SUN_X, SUN_Y, SUN_R, CANVAS, BELT_R, ORBIT_GLOW, BATTERY_R, BATTERY_A0, BATTERY_A1
 
 REF = 900
 F = REF / CANVAS             # 2.0
@@ -278,37 +278,38 @@ def render_background(orbits_ref, comet=None, ticks=True, battery_track=True):
         x, y, depth = to_screen(r, lam)
         col = np.array([0.45, 0.85, 1.0]) if i == 2 else 0.6 * GOLD + 0.4
         near = 0.6 + 0.4 * (-depth / r * 0.5 + 0.5)
-        splat(orb, x, y, 0.05 * near * (2 * np.pi * r / n) * 0.9, col)
+        splat(orb, x, y, ORBIT_GLOW * near * (2 * np.pi * r / n) * 0.9, col)
     img += orb
 
     # asteroid belt
     nb = 2600
-    br = rng.normal(180, 9, nb); bl = rng.uniform(0, 360, nb)
+    br = rng.normal(BELT_R * F, 9, nb); bl = rng.uniform(0, 360, nb)
     bx, by, _ = to_screen(br, bl)
     bb = rng.uniform(0.05, 0.35, nb) ** 1.5
     splat(img, bx, by, bb, np.array([0.9, 0.82, 0.7]))
 
     # sun
-    R_SUN = 34
+    R_SUN = SUN_R * F
+    q = R_SUN / 34                                         # size relative to the reference sun
     sdx, sdy = xx - C, yy - CY
     sd = np.hypot(sdx, sdy)
     ang = np.arctan2(sdy, sdx)
     stream = 0.6 + 0.8 * vnoise(np.cos(ang) * 6 + 20, np.sin(ang) * 6 + 20, 3, 77)
-    glow = (1.1 * np.exp(-np.clip(sd - R_SUN, 0, None) / 9) +
-            0.55 * stream * np.exp(-np.clip(sd - R_SUN, 0, None) / 34) + 0.14 * np.exp(-sd / 130))
+    glow = (1.1 * np.exp(-np.clip(sd - R_SUN, 0, None) / (9 * q)) +
+            0.55 * stream * np.exp(-np.clip(sd - R_SUN, 0, None) / (34 * q ** 0.5)) + 0.14 * np.exp(-sd / 130))
     img += glow[..., None] * np.array([1.0, 0.58, 0.2])
-    for rr, a in ((62, 0.10), (96, 0.05)):                # static light rings around the sun
-        img += (np.exp(-((sd - rr) ** 2) / (2 * 1.6 ** 2)) * a)[..., None] * np.array([1.0, 0.5, 0.25])
+    for rr, a in ((62 * q, 0.10), (96 * q, 0.05)):                # static light rings around the sun
+        img += (np.exp(-((sd - rr) ** 2) / (2 * (1.6 * q) ** 2)) * a)[..., None] * np.array([1.0, 0.5, 0.25])
     pa = np.deg2rad(-35)
-    pcx, pcy = C + (R_SUN + 2) * np.cos(pa), CY + (R_SUN + 2) * np.sin(pa)
+    pcx, pcy = C + (R_SUN + 2 * q) * np.cos(pa), CY + (R_SUN + 2 * q) * np.sin(pa)
     pd = np.hypot(xx - pcx, yy - pcy)
-    loop = np.exp(-((pd - 9) ** 2) / (2 * 1.8 ** 2)) * (sd > R_SUN)
+    loop = np.exp(-((pd - 9 * q) ** 2) / (2 * (1.8 * q) ** 2)) * (sd > R_SUN)
     loop *= 0.7 + 0.6 * vnoise(xx / 2, yy / 2, 3, 5)
     img += loop[..., None] * np.array([1.6, 0.45, 0.15])
     mu = np.sqrt(np.clip(1 - (sd / R_SUN) ** 2, 0, 1))
     limb = 0.35 + 0.65 * mu ** 0.6
-    gran = vnoise(xx / 2.6, yy / 2.6, 4, 3)
-    spots = np.exp(-(((sdx + 9) ** 2 + (sdy - 6) ** 2) / 6)) + 0.7 * np.exp(-(((sdx - 12) ** 2 + (sdy + 4) ** 2) / 3))
+    gran = vnoise(xx / (2.6 * q), yy / (2.6 * q), 4, 3)
+    spots = np.exp(-(((sdx + 9 * q) ** 2 + (sdy - 6 * q) ** 2) / (6 * q * q))) + 0.7 * np.exp(-(((sdx - 12 * q) ** 2 + (sdy + 4 * q) ** 2) / (3 * q * q)))
     sun_col = np.stack([np.ones_like(mu), 0.62 + 0.3 * mu, 0.18 + 0.45 * mu ** 2], -1)
     sun = sun_col * (limb * (0.85 + 0.3 * gran) * (1 - 0.6 * spots))[..., None] * 0.8
     aa = np.clip(R_SUN - sd + 0.5, 0, 1)[..., None]
@@ -337,8 +338,8 @@ def render_background(orbits_ref, comet=None, ticks=True, battery_track=True):
         major = (hr < 1.3) & (dist > 404) & (dist < 425)
         img += (minor * 0.35 + major * 0.9)[..., None] * GOLD
     if battery_track:
-        a0, a1 = np.deg2rad(140), np.deg2rad(220)
-        arc = np.exp(-((dist - 392) ** 2) / (2 * 0.9 ** 2)) * ((theta > a0) & (theta < a1))
+        a0, a1 = np.deg2rad(BATTERY_A0), np.deg2rad(BATTERY_A1)
+        arc = np.exp(-((dist - BATTERY_R * F) ** 2) / (2 * 1.2 ** 2)) * ((theta > a0) & (theta < a1))
         img += (arc * 0.12)[..., None] * GOLD
 
     img *= (1 - 0.45 * (dist / R_FACE) ** 3)[..., None]

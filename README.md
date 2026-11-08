@@ -16,7 +16,7 @@ Das Aussehen ist 1:1 das freigegebene Referenzbild. Alles Statische wird mit der
 - Filmischer Tonemap (ACES)
 
 Live auf der Uhr laufen:
-- **Planeten:** Alle 8 bewegen sich in 3D-Schrägansicht. Die vorderen sind größer, Merkur, Venus und Erde können hinter der Sonne verschwinden.
+- **Planeten:** Alle 8 bewegen sich in 3D-Schrägansicht (30° über der Bahnebene). Die vorderen sind größer, Merkur und Venus können hinter der Sonne verschwinden. Größen und Abstände sind für das kleine Display hochskaliert, nicht maßstabsgetreu.
 - **Vorberechnete Beleuchtung:** 24 Lichtphasen pro Planet. Die zur aktuellen Position passende wird angezeigt. Dadurch stimmen Tag-/Nachtgrenze, Sichelphasen vor der Sonne, die Stadtlichter auf der Nachtseite der Erde und der Ringschatten des Saturn.
 - **Monde:** Der Mond kreist um die Erde. Io, Europa, Ganymed und Kallisto kreisen um den Jupiter.
 - **Leuchtspuren:** Jeder Planet zieht eine goldene Spur hinter sich her. Die cyanfarbene Spur der Erde zeigt den Schrittfortschritt zum Tagesziel.
@@ -99,5 +99,5 @@ Das XML besteht den offiziellen WFF-Validator (Version 4), und der Simulator ren
 
 ## Lizenzen
 
-- Schrift Inter (Display ExtraLight, Light): SIL Open Font License 1.1, siehe `licenses/Inter-OFL.txt`
+- Schrift Inter (Display ExtraLight, Regular): SIL Open Font License 1.1, siehe `licenses/Inter-OFL.txt`
 - Gradle-Wrapper und Build-Gerüst stammen aus den Wear-OS-Samples (Apache 2.0).

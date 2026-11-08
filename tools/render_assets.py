@@ -70,7 +70,8 @@ def render_static():
     crop = bg[cy - n // 2:cy + n // 2, cx - n // 2:cx + n // 2]
     yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
     d = np.hypot(xx - n / 2 + 0.5, yy - n / 2 + 0.5)
-    a = np.clip((44 - d) / (44 - 35), 0, 1) ** 1.5    # opaque over the sun disc (r 34 ref px), gone at r 44
+    rs = SUN_R * Fs
+    a = np.clip((rs + 10 - d) / 9, 0, 1) ** 1.5    # opaque over the sun disc, gone 10 ref px outside
     save(np.dstack([crop, a]), "sonne_overlay")
     return (x0 / Fs, y0 / Fs, (x1 - x0) / Fs, (y1 - y0) / Fs)
 
