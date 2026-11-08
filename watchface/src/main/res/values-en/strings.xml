@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Solar System</string>
+    <string name="cfg_modus">Planet motion</string>
+    <string name="cfg_modus_uhrwerk">Clockwork (Neptune = 24 h)</string>
+    <string name="cfg_modus_echt">Real positions (today)</string>
+    <string name="cfg_puls">Sun pulses with heartbeat</string>
+    <string name="cfg_komet">Comet</string>
+</resources>
