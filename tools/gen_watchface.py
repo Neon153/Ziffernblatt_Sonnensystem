@@ -26,6 +26,7 @@ from PIL import ImageFont
 
 sys.path.insert(0, os.path.dirname(__file__))
 from config import *  # noqa
+import ui_common as ui
 
 HERE = os.path.dirname(__file__)
 RES = os.path.join(HERE, "..", "watchface", "src", "main", "res")
@@ -295,6 +296,7 @@ def build():
     S(lc, "ListOption", dict(id="uhrwerk", displayName="cfg_modus_uhrwerk"))
     S(lc, "ListOption", dict(id="echt", displayName="cfg_modus_echt"))
     S(uc, "BooleanConfiguration", dict(id="komet", displayName="cfg_komet", defaultValue="TRUE"))
+    ui.add_font_config(uc)
 
     sc = S(wf, "Scene", dict(backgroundColor="#FF000000"))
     bg = image(sc, "hintergrund", 0, 0, CANVAS, CANVAS, name="hintergrund")
@@ -319,8 +321,7 @@ def build():
     S(arc, "Stroke", attrs(color="#FFE4CB96", thickness=1.8, cap="BUTT"))
     tf(arc, "startAngle", f"{fmt(BATTERY_A1)} - {fmt((BATTERY_A1 - BATTERY_A0) / 100)} * clamp([BATTERY_PERCENT], 0, 100)")
 
-    time_text(sc, COL_TIME, False)
-    time_text(sc, COL_TIME_AOD, True)
+    ui.time_block(RES, sc, TIME_BASE, COL_TIME, COL_TIME_AOD)
     date_text(sc, COL_GOLD, False)
     date_text(sc, COL_DATE_AOD, True)
 
@@ -336,17 +337,11 @@ def build():
 
     row = group(sc, "werte")
     ambient_hide(row)
-    _, comps = condition(row, [("hr_ok", "[HEART_RATE] > 0")])
     hx, sx_, bx = ROW_X
-    text(comps["hr_ok"], hx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, COL_ROW, "%s BPM", ("[HEART_RATE]",), letter=ROW_LS)
-    text(S(row.find("Condition"), "Default"), hx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, "#FF8A867E", "-- BPM",
-         letter=ROW_LS)
-    text(row, sx_, ROW_BASE, 70, SMALL_FONT, ROW_SIZE, COL_STEPS, "%s", ("[STEP_COUNT]",), letter=ROW_LS)
-    text(row, bx, ROW_BASE, 90, SMALL_FONT, ROW_SIZE, COL_ROW, "%s %%", ("[BATTERY_PERCENT]",), letter=ROW_LS)
-    dots = S(row, "PartDraw", attrs(x=0, y=0, width=CANVAS, height=CANVAS))
-    for x in ((hx + sx_) / 2 + 2, (sx_ + bx) / 2 - 2):
-        e = S(dots, "Ellipse", attrs(x=x - 1.3, y=ROW_BASE - 7.5, width=2.6, height=2.6))
-        S(e, "Fill", dict(color=COL_GOLD))
+    # user-selectable data fields (complications) in the bottom row
+    ui.row_slot(RES, sc, "1", "feld_links", hx, ROW_BASE, 86, "HEART_RATE", "SHORT_TEXT", COL_ROW, COL_GOLD)
+    ui.row_slot(RES, sc, "2", "feld_mitte", sx_, ROW_BASE, 74, "STEP_COUNT", "SHORT_TEXT", COL_STEPS, COL_GOLD)
+    ui.row_slot(RES, sc, "3", "feld_rechts", bx, ROW_BASE, 86, "WATCH_BATTERY", "RANGED_VALUE", COL_ROW, COL_GOLD)
     return wf
 
 

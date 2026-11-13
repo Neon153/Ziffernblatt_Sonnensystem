@@ -9,6 +9,13 @@
       <ListOption id="echt" displayName="cfg_modus_echt" />
     </ListConfiguration>
     <BooleanConfiguration id="komet" displayName="cfg_komet" defaultValue="TRUE" />
+    <ListConfiguration id="schrift" displayName="cfg_schrift" defaultValue="klassisch">
+      <ListOption id="klassisch" displayName="schrift_klassisch" />
+      <ListOption id="kraeftig" displayName="schrift_kraeftig" />
+      <ListOption id="futuristisch" displayName="schrift_futuristisch" />
+      <ListOption id="technisch" displayName="schrift_technisch" />
+      <ListOption id="elegant" displayName="schrift_elegant" />
+    </ListConfiguration>
   </UserConfigurations>
   <Scene backgroundColor="#FF000000">
     <PartImage x="0" y="0" width="450" height="450" name="hintergrund">
@@ -4899,50 +4906,248 @@
         <Transform target="startAngle" value="205 - 0.5 * clamp([BATTERY_PERCENT], 0, 100)" />
       </Arc>
     </PartDraw>
-    <Group name="zeit" x="0" y="0" width="450" height="450">
-      <Variant mode="AMBIENT" target="alpha" value="0" />
-      <Condition>
-        <Expressions>
-          <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
-        </Expressions>
-        <Compare expression="h24">
-          <PartText x="65" y="46" width="320" height="90">
-            <Text align="CENTER">
-              <Font family="inter_display_extralight" size="74" color="#FFF0ECE4" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
-            </Text>
-          </PartText>
-        </Compare>
-        <Default>
-          <PartText x="65" y="46" width="320" height="90">
-            <Text align="CENTER">
-              <Font family="inter_display_extralight" size="74" color="#FFF0ECE4" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
-            </Text>
-          </PartText>
-        </Default>
-      </Condition>
-    </Group>
-    <Group name="zeit_aod" x="0" y="0" width="450" height="450" alpha="0">
-      <Variant mode="AMBIENT" target="alpha" value="255" />
-      <Condition>
-        <Expressions>
-          <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
-        </Expressions>
-        <Compare expression="h24">
-          <PartText x="65" y="46" width="320" height="90">
-            <Text align="CENTER">
-              <Font family="inter_display_extralight" size="74" color="#FFAF9669" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
-            </Text>
-          </PartText>
-        </Compare>
-        <Default>
-          <PartText x="65" y="46" width="320" height="90">
-            <Text align="CENTER">
-              <Font family="inter_display_extralight" size="74" color="#FFAF9669" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
-            </Text>
-          </PartText>
-        </Default>
-      </Condition>
-    </Group>
+    <ListConfiguration id="schrift">
+      <ListOption id="klassisch">
+        <Group name="zeit_klassisch" x="0" y="0" width="450" height="450">
+          <Group name="zeit_klassisch_aktiv" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="46" width="330" height="90">
+                  <Text align="CENTER">
+                    <Font family="inter_display_extralight" size="74" color="#FFF0ECE4" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="46" width="330" height="90">
+                  <Text align="CENTER">
+                    <Font family="inter_display_extralight" size="74" color="#FFF0ECE4" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+          <Group name="zeit_klassisch_aod" x="0" y="0" width="450" height="450" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="46" width="330" height="90">
+                  <Text align="CENTER">
+                    <Font family="inter_display_extralight" size="74" color="#FFAF9669" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="46" width="330" height="90">
+                  <Text align="CENTER">
+                    <Font family="inter_display_extralight" size="74" color="#FFAF9669" letterSpacing="0.03"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+        </Group>
+      </ListOption>
+      <ListOption id="kraeftig">
+        <Group name="zeit_kraeftig" x="0" y="0" width="450" height="450">
+          <Group name="zeit_kraeftig_aktiv" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="51" width="330" height="85">
+                  <Text align="CENTER">
+                    <Font family="inter_display_semibold" size="69.6" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="51" width="330" height="85">
+                  <Text align="CENTER">
+                    <Font family="inter_display_semibold" size="69.6" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+          <Group name="zeit_kraeftig_aod" x="0" y="0" width="450" height="450" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="51" width="330" height="85">
+                  <Text align="CENTER">
+                    <Font family="inter_display_semibold" size="69.6" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="51" width="330" height="85">
+                  <Text align="CENTER">
+                    <Font family="inter_display_semibold" size="69.6" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+        </Group>
+      </ListOption>
+      <ListOption id="futuristisch">
+        <Group name="zeit_futuristisch" x="0" y="0" width="450" height="450">
+          <Group name="zeit_futuristisch_aktiv" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="63" width="330" height="69">
+                  <Text align="CENTER">
+                    <Font family="orbitron_regular" size="54.7" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="63" width="330" height="69">
+                  <Text align="CENTER">
+                    <Font family="orbitron_regular" size="54.7" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+          <Group name="zeit_futuristisch_aod" x="0" y="0" width="450" height="450" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="63" width="330" height="69">
+                  <Text align="CENTER">
+                    <Font family="orbitron_regular" size="54.7" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="63" width="330" height="69">
+                  <Text align="CENTER">
+                    <Font family="orbitron_regular" size="54.7" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+        </Group>
+      </ListOption>
+      <ListOption id="technisch">
+        <Group name="zeit_technisch" x="0" y="0" width="450" height="450">
+          <Group name="zeit_technisch_aktiv" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="50" width="330" height="88">
+                  <Text align="CENTER">
+                    <Font family="jetbrains_mono_light" size="66.5" color="#FFF0ECE4" letterSpacing="-0.02"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="50" width="330" height="88">
+                  <Text align="CENTER">
+                    <Font family="jetbrains_mono_light" size="66.5" color="#FFF0ECE4" letterSpacing="-0.02"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+          <Group name="zeit_technisch_aod" x="0" y="0" width="450" height="450" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="50" width="330" height="88">
+                  <Text align="CENTER">
+                    <Font family="jetbrains_mono_light" size="66.5" color="#FFAF9669" letterSpacing="-0.02"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="50" width="330" height="88">
+                  <Text align="CENTER">
+                    <Font family="jetbrains_mono_light" size="66.5" color="#FFAF9669" letterSpacing="-0.02"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+        </Group>
+      </ListOption>
+      <ListOption id="elegant">
+        <Group name="zeit_elegant" x="0" y="0" width="450" height="450">
+          <Group name="zeit_elegant_aktiv" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="40" width="330" height="96">
+                  <Text align="CENTER">
+                    <Font family="playfair_display" size="72" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="40" width="330" height="96">
+                  <Text align="CENTER">
+                    <Font family="playfair_display" size="72" color="#FFF0ECE4"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+          <Group name="zeit_elegant_aod" x="0" y="0" width="450" height="450" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Condition>
+              <Expressions>
+                <Expression name="h24">[IS_24_HOUR_MODE]</Expression>
+              </Expressions>
+              <Compare expression="h24">
+                <PartText x="60" y="40" width="330" height="96">
+                  <Text align="CENTER">
+                    <Font family="playfair_display" size="72" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Compare>
+              <Default>
+                <PartText x="60" y="40" width="330" height="96">
+                  <Text align="CENTER">
+                    <Font family="playfair_display" size="72" color="#FFAF9669"><Template>%s:%s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE_Z]" /></Template></Font>
+                  </Text>
+                </PartText>
+              </Default>
+            </Condition>
+          </Group>
+        </Group>
+      </ListOption>
+    </ListConfiguration>
     <PartText x="95" y="132" width="240" height="20" name="datum">
       <Text align="CENTER">
         <Font family="inter_regular" size="16" color="#FFDCBE87" letterSpacing="0.16"><Upper><Template>%s  ·  %s %s<Parameter expression="subText([DAY_OF_WEEK_S], 0, 2)" /><Parameter expression="[DAY]" /><Parameter expression="subText([MONTH_S], 0, 3)" /></Template></Upper></Font>
@@ -5013,43 +5218,378 @@
     </Group>
     <Group name="werte" x="0" y="0" width="450" height="450">
       <Variant mode="AMBIENT" target="alpha" value="0" />
-      <Condition>
-        <Expressions>
-          <Expression name="hr_ok">[HEART_RATE] &gt; 0</Expression>
-        </Expressions>
-        <Compare expression="hr_ok">
-          <PartText x="95" y="378" width="90" height="21">
-            <Text align="CENTER">
-              <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s BPM<Parameter expression="[HEART_RATE]" /></Template></Font>
-            </Text>
-          </PartText>
-        </Compare>
-        <Default>
-          <PartText x="95" y="378" width="90" height="21">
-            <Text align="CENTER">
-              <Font family="inter_regular" size="17" color="#FF8A867E" letterSpacing="0.06">-- BPM</Font>
-            </Text>
-          </PartText>
-        </Default>
-      </Condition>
-      <PartText x="190" y="378" width="70" height="21">
-        <Text align="CENTER">
-          <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[STEP_COUNT]" /></Template></Font>
-        </Text>
-      </PartText>
-      <PartText x="265" y="378" width="90" height="21">
-        <Text align="CENTER">
-          <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s %%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
-        </Text>
-      </PartText>
-      <PartDraw x="0" y="0" width="450" height="450">
-        <Ellipse x="183.2" y="386.5" width="2.6" height="2.6">
-          <Fill color="#FFDCBE87" />
-        </Ellipse>
-        <Ellipse x="264.2" y="386.5" width="2.6" height="2.6">
-          <Fill color="#FFDCBE87" />
-        </Ellipse>
-      </PartDraw>
     </Group>
+    <ComplicationSlot slotId="1" name="feld_links" displayName="feld_links" x="97" y="376" width="86" height="25" supportedTypes="SHORT_TEXT RANGED_VALUE GOAL_PROGRESS MONOCHROMATIC_IMAGE EMPTY" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="HEART_RATE" defaultSystemProviderType="SHORT_TEXT" />
+      <BoundingRoundBox x="0" y="0" width="86" height="25" cornerRadius="6" outlinePadding="2" />
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+      <Complication type="RANGED_VALUE">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.GOAL_PROGRESS_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartImage x="35" y="4" width="16" height="16" tintColor="#FFC8C4BC">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+    <ComplicationSlot slotId="2" name="feld_mitte" displayName="feld_mitte" x="188" y="376" width="74" height="25" supportedTypes="SHORT_TEXT RANGED_VALUE GOAL_PROGRESS MONOCHROMATIC_IMAGE EMPTY" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+      <BoundingRoundBox x="0" y="0" width="74" height="25" cornerRadius="6" outlinePadding="2" />
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="12" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="30" y="2" width="44" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+      <Complication type="RANGED_VALUE">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="12" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="30" y="2" width="44" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="12" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="30" y="2" width="44" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="74" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FF96D7F0" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.GOAL_PROGRESS_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartImage x="29" y="4" width="16" height="16" tintColor="#FF96D7F0">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+    <ComplicationSlot slotId="3" name="feld_rechts" displayName="feld_rechts" x="267" y="376" width="86" height="25" supportedTypes="SHORT_TEXT RANGED_VALUE GOAL_PROGRESS MONOCHROMATIC_IMAGE EMPTY" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
+      <BoundingRoundBox x="0" y="0" width="86" height="25" cornerRadius="6" outlinePadding="2" />
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+      <Complication type="RANGED_VALUE">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <Condition>
+          <Expressions>
+            <Expression name="ttl">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.TITLE] != null</Expression>
+            <Expression name="img">[COMPLICATION.TEXT] != null &amp;&amp; [COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
+            <Expression name="txt">[COMPLICATION.TEXT] != null</Expression>
+          </Expressions>
+          <Compare expression="ttl">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Upper><Template>%s %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template></Upper></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="img">
+            <PartImage x="18" y="5" width="14" height="14" tintColor="#FFDCBE87">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+            </PartImage>
+            <PartText x="36" y="2" width="50" height="21">
+              <Text align="START" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="txt">
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="0" y="2" width="86" height="21">
+              <Text align="CENTER">
+                <Font family="inter_regular" size="17" color="#FFC8C4BC" letterSpacing="0.06"><Template>%s<Parameter expression="round([COMPLICATION.GOAL_PROGRESS_VALUE])" /></Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartImage x="35" y="4" width="16" height="16" tintColor="#FFC8C4BC">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
   </Scene>
 </WatchFace>

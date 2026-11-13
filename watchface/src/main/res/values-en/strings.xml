@@ -6,4 +6,14 @@
     <string name="cfg_modus_echt">Real positions (today)</string>
     <string name="cfg_puls">Sun pulses with heartbeat</string>
     <string name="cfg_komet">Comet</string>
+    <string name="cfg_schrift">Font</string>
+    <string name="schrift_klassisch">Classic</string>
+    <string name="schrift_kraeftig">Bold</string>
+    <string name="schrift_futuristisch">Futuristic</string>
+    <string name="schrift_technisch">Technical</string>
+    <string name="schrift_elegant">Elegant</string>
+    <string name="feld_links">Left field</string>
+    <string name="feld_mitte">Centre field</string>
+    <string name="feld_rechts">Right field</string>
+    <string name="feld_unten">Bottom field</string>
 </resources>

@@ -111,6 +111,8 @@ class Expr:
                     self.take(); args.append(self.ternary())
             self.take(")")
             return ("call", t, args)
+        if t == "null":
+            return ("null",)
         return ("str", t)       # bare identifier = string resource name
 
 
@@ -126,8 +128,9 @@ def evaluate(src, env):
 def _eval(n, env):
     k = n[0]
     if k == "num": return n[1]
-    if k == "src": return env[n[1]]
+    if k == "src": return env.get(n[1]) if n[1].startswith("COMPLICATION.") else env[n[1]]
     if k == "str": return n[1]
+    if k == "null": return None
     if k == "call": return FUNCS[n[1]](*[_eval(a, env) for a in n[2]])
     if k == "?": return _eval(n[2], env) if _eval(n[1], env) else _eval(n[3], env)
     if k == "u-": return -_eval(n[1], env)
@@ -136,7 +139,8 @@ def _eval(n, env):
     a, b = _eval(n[1], env), _eval(n[2], env)
     return {"+": lambda: a + b, "-": lambda: a - b, "*": lambda: a * b, "/": lambda: a / b,
             "%": lambda: math.fmod(a, b), ">": lambda: a > b, ">=": lambda: a >= b, "<": lambda: a < b,
-            "<=": lambda: a <= b, "==": lambda: abs(a - b) < 1e-9 if isinstance(a, float) else a == b,
+            "<=": lambda: a <= b,
+            "==": lambda: abs(a - b) < 1e-9 if isinstance(a, float) and isinstance(b, float) else a == b,
             "!=": lambda: a != b, "&&": lambda: a and b, "||": lambda: a or b}[k]()
 
 
@@ -166,6 +170,33 @@ def environment(t, hr=72, steps=6420, goal=10000, battery=84):
         "ACCELEROMETER_ANGLE_X": 0.0, "ACCELEROMETER_ANGLE_Y": 0.0,
         "_hhmm": t.strftime("%H:%M"),
     }
+
+
+SAMPLE_COMPLICATIONS = {
+    "HEART_RATE": dict(TEXT="74", MONOCHROMATIC_IMAGE="icon_herz"),
+    "STEP_COUNT": dict(TEXT="8231", MONOCHROMATIC_IMAGE="icon_schuh"),
+    "WATCH_BATTERY": dict(TEXT="62%", MONOCHROMATIC_IMAGE="icon_akku", RANGED_VALUE_VALUE=62.0,
+                          RANGED_VALUE_MIN=0.0, RANGED_VALUE_MAX=100.0),
+    "NEXT_EVENT": dict(TEXT="Labor Embedded", TITLE="16:30"),
+}
+
+
+def sim_icon(name, size=64):
+    """simple white icons standing in for the provider's monochromatic images"""
+    im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    s = size
+    if name == "icon_herz":
+        d.ellipse((s * .1, s * .2, s * .52, s * .6), fill="white"); d.ellipse((s * .48, s * .2, s * .9, s * .6), fill="white")
+        d.polygon([(s * .12, s * .48), (s * .88, s * .48), (s * .5, s * .9)], fill="white")
+    elif name == "icon_schuh":
+        d.ellipse((s * .3, s * .1, s * .62, s * .55), fill="white"); d.ellipse((s * .38, s * .6, s * .62, s * .9), fill="white")
+    elif name == "icon_akku":
+        d.rounded_rectangle((s * .3, s * .15, s * .7, s * .9), radius=s * .08, outline="white", width=int(s * .08))
+        d.rectangle((s * .4, s * .05, s * .6, s * .15), fill="white"); d.rectangle((s * .38, s * .45, s * .62, s * .82), fill="white")
+    else:
+        d.ellipse((s * .2, s * .2, s * .8, s * .8), fill="white")
+    return im.convert("RGBa")
 
 
 # ============================================================================ renderer
@@ -223,7 +254,8 @@ class Renderer:
 
     def node(self, el, M, alpha):
         tag = el.tag
-        if tag in ("Transform", "Variant", "Gyro", "Expressions", "Image", "Reference"):
+        if tag in ("Transform", "Variant", "Gyro", "Expressions", "Image", "Reference", "DefaultProviderPolicy",
+                   "BoundingOval", "BoundingBox", "BoundingRoundBox"):
             return
         if tag == "Group":
             p = self.props(el, {})
@@ -253,6 +285,22 @@ class Renderer:
             self.part_draw(el, M, alpha)
         elif tag == "PartText":
             self.part_text(el, M, alpha)
+        elif tag == "ComplicationSlot":
+            p = self.props(el, {})
+            a = alpha * p.get("alpha", 255) / 255
+            if a <= 0.001:
+                return
+            pol = el.find("DefaultProviderPolicy")
+            prov, typ = pol.get("defaultSystemProvider"), pol.get("defaultSystemProviderType")
+            data = SAMPLE_COMPLICATIONS.get(prov, {})
+            comp = next((c for c in el.findall("Complication") if c.get("type") == typ), None)
+            if comp is None:
+                return
+            saved = dict(self.env)
+            for k, v in data.items():
+                self.env["COMPLICATION." + k] = v
+            self.children(comp, self.local(M, p), a)
+            self.env = saved
         elif tag == "DigitalClock":
             p = self.props(el, {})
             Ml = self.local(M, p)
@@ -282,14 +330,25 @@ class Renderer:
         a = alpha * p.get("alpha", 255) / 255
         if a <= 0.001:
             return
-        img = self.sprite(el.find("Image").get("resource"))
+        res = el.find("Image").get("resource")
+        if res.startswith("["):
+            name = evaluate(res, self.env)
+            if name is None:
+                return
+            img = sim_icon(name)
+        else:
+            img = self.sprite(res)
         sw, sh = img.size
         Ml = self.local(M, p) @ Sc(p["width"] / sw, p["height"] / sh)
         inv = np.linalg.inv(Ml)
         n = CANVAS * SS
         out = img.transform((n, n), Image.AFFINE, tuple(inv[:2].flatten()), resample=Image.BICUBIC)
         arr = np.asarray(out, np.float32) / 255
-        self.composite(arr[..., :3] * a, arr[..., 3] * a, p.get("blendMode"))
+        rgb = arr[..., :3]
+        if isinstance(p.get("tintColor"), str) and not p["tintColor"].startswith("["):
+            _, tint = self.color(p["tintColor"])
+            rgb = rgb * tint
+        self.composite(rgb * a, arr[..., 3] * a, p.get("blendMode"))
 
     def color(self, s):
         s = s.lstrip("#")
@@ -336,6 +395,14 @@ class Renderer:
                     a_c, rgb = self.color(fi.get("color"))
                     m = np.asarray(layer, np.float32) / 255 * a_c * a
                     self.composite(rgb * m[..., None], m, None)
+            elif sh.tag == "RoundRectangle":
+                n = CANVAS * SS
+                layer = Image.new("L", (n, n), 0)
+                p0 = Ml @ np.array([q["x"], q["y"], 1]); p1 = Ml @ np.array([q["x"] + q["width"], q["y"] + q["height"], 1])
+                ImageDraw.Draw(layer).rounded_rectangle((p0[0], p0[1], p1[0], p1[1]), radius=q["cornerRadiusX"] * SS, fill=255)
+                a_c, rgb = self.color(fi.get("color"))
+                m = np.asarray(layer, np.float32) / 255 * a_c * a
+                self.composite(rgb * m[..., None], m, None)
             elif sh.tag == "Arc":
                 s0, s1 = q["startAngle"], q["endAngle"]
                 if abs(s1 - s0) < 1e-3:
@@ -353,7 +420,10 @@ class Renderer:
     def font(self, family, size):
         key = (family, size)
         if key not in self.fonts:
-            self.fonts[key] = ImageFont.truetype(os.path.join(RES, "font", family + ".otf"), int(round(size * SS)))
+            path = os.path.join(RES, "font", family + ".otf")
+            if not os.path.exists(path):
+                path = path[:-4] + ".ttf"
+            self.fonts[key] = ImageFont.truetype(path, int(round(size * SS)))
         return self.fonts[key]
 
     def draw_text(self, s, p, M, alpha, family, size, color, align, letter=0.0):
@@ -390,6 +460,8 @@ class Renderer:
             vals = []
             for prm in tp.findall("Parameter"):
                 v = evaluate(prm.get("expression"), self.env)
+                if v is None:
+                    v = ""
                 vals.append(str(int(v)) if isinstance(v, float) and v == int(v) else str(v))
             s = tp.text.replace("%%", "\x00") % tuple(vals)
             s = s.replace("\x00", "%")
@@ -422,7 +494,7 @@ class Renderer:
 
 
 def render(t, cfg=None, ambient=False, **env_kw):
-    cfg = cfg or dict(modus="uhrwerk", komet="TRUE")
+    cfg = dict(dict(modus="uhrwerk", komet="TRUE", schrift="klassisch", motiv="nebel"), **(cfg or {}))
     root = ET.parse(XML).getroot()
     r = Renderer(root, environment(t, **env_kw), cfg, ambient).render()
     return r

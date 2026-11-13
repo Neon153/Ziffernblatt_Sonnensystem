@@ -20,7 +20,7 @@ Live auf der Uhr laufen:
 - **Vorberechnete Beleuchtung:** 24 Lichtphasen pro Planet. Die zur aktuellen Position passende wird angezeigt. Dadurch stimmen Tag-/Nachtgrenze, Sichelphasen vor der Sonne, die Stadtlichter auf der Nachtseite der Erde und der Ringschatten des Saturn.
 - **Monde:** Der Mond kreist um die Erde. Io, Europa, Ganymed und Kallisto kreisen um den Jupiter.
 - **Leuchtspuren:** Jeder Planet zieht eine goldene Spur hinter sich her. Die cyanfarbene Spur der Erde zeigt den Schrittfortschritt zum Tagesziel.
-- **Anzeigen:** Uhrzeit, Datum mit echter Mondphase, Puls, Schritte und Akku. Der Akku wird zusätzlich als goldener Bogen unten angezeigt.
+- **Anzeigen:** Uhrzeit in wählbarer Schrift, Datum mit echter Mondphase, drei frei belegbare Datenfelder (Standard: Puls, Schritte, Akku) und der Akku als goldener Bogen unten.
 
 Der Komet steht fest an seiner Position und lässt sich abschalten. Für den Always-On-Modus gibt es eine eigene Variante aus Haarlinien: nur Bahnen, Sonnenring, Planeten-Umrisse und die Uhrzeit in Gold.
 
@@ -32,6 +32,34 @@ Um 22:59:30 zeigt der Uhrwerk-Modus genau die Planetenstellung des Referenzbilde
 |---|---|
 | Planetenbewegung | **Uhrwerk**: Neptun = 24 h, die anderen Planeten nach echten Umlaufverhältnissen heruntergerechnet · **Echte Positionen**: heliozentrische Längen von heute |
 | Komet | an / aus |
+| Schriftart | Klassisch · Kräftig · Futuristisch · Technisch · Elegant |
+
+
+### Schriftart und Datenfelder
+
+**Schriftart** (*Anpassen → Schriftart*) für die Uhrzeit, auch im Always-On-Modus. Alle Schriften stehen unter SIL OFL 1.1 und liegen in `res/font`:
+
+| Option | Schrift |
+|---|---|
+| Klassisch | Inter Display ExtraLight |
+| Kräftig | Inter Display SemiBold |
+| Futuristisch | Orbitron |
+| Technisch | JetBrains Mono Light |
+| Elegant | Playfair Display, mit fest eingebauten Versalziffern |
+
+Die Größe wird pro Schrift automatisch so angepasst, dass die Uhrzeit immer gleich breit ist (`time_size()` in `tools/ui_common.py`).
+
+**Datenfelder** (*Anpassen → Feld antippen → Datenquelle*): Das sind Komplikationen, also Felder, die mit jeder Datenquelle auf der Uhr belegt werden können, zum Beispiel Wetter, Termine, Puls, Schritte, Akku, Sonnenaufgang, Weltzeit oder Datenquellen von Apps.
+
+Beim Sonnensystem sind es drei Felder in der Zeile unten:
+
+| Feld | Standard |
+|---|---|
+| links | Puls |
+| Mitte | Schritte |
+| rechts | Akku |
+
+Felder liefern Text, Wert und Icon. Mit Wert erscheint der Fortschritt als Zahl. Die Leuchtspur der Erde zeigt weiterhin den Schrittfortschritt, der goldene Bogen unten den Akku.
 
 ### Umlaufzeiten im Uhrwerk-Modus
 
@@ -84,6 +112,7 @@ python tools/simulate.py gallery  # aktiv / ambient / echt / ohne Komet + Animat
 | `tools/look.py` | Das Aussehen des Referenzbildes: Oberflächen, Shading, Sonne, Sterne, Tonemap |
 | `tools/render_assets.py` | Rendert alle Bitmaps mit `look.py` |
 | `tools/gen_watchface.py` | Baut das XML: Lichtphasen-Bedingungen, Tiefenreihenfolge, Spuren als gestapelte Bögen, beide Modi, Always-On |
+| `tools/ui_common.py` | Schriftauswahl und Datenfelder, gemeinsam mit dem Weltraum-Zifferblatt |
 | `tools/simulate.py` | Eigener Parser für WFF-Ausdrücke und Renderer, damit sich das XML ohne Uhr prüfen lässt |
 
 Prüfen gegen das offizielle Schema geht mit dem [WFF-Validator](https://github.com/google/watchface):
@@ -99,5 +128,5 @@ Das XML besteht den offiziellen WFF-Validator (Version 4), und der Simulator ren
 
 ## Lizenzen
 
-- Schrift Inter (Display ExtraLight, Regular): SIL Open Font License 1.1, siehe `licenses/Inter-OFL.txt`
+- Schriften Inter, Orbitron, JetBrains Mono, Playfair Display: SIL Open Font License 1.1, siehe `licenses/`
 - Gradle-Wrapper und Build-Gerüst stammen aus den Wear-OS-Samples (Apache 2.0).
